@@ -94,11 +94,6 @@ def get_flow_scaling_factor(network: str, meas_id: int, dem: str, precip_raster:
             raise Exception('no geoms')
         shps = [g['geometry'] for g in geoms]
 
-
-        temp = os.path.join(os.path.dirname(dem), 'catch_tmp.shp')
-        tempdf = gpd.GeoDataFrame.from_features(geoms)
-        tempdf.to_file(temp)
-
         with rasterio.open(precip_raster) as src:
             out_image, out_transform = mask(src, shps, crop=True)
 
