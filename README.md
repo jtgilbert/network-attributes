@@ -1,2 +1,2 @@
-# discharge-scaling
-Simple algorithm for scaling discharge measurements at a single reach across a drainage network.
+# network-attributes
+Functions for adding frequently-used attributes to stream network feature classes.
