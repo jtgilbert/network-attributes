@@ -1,7 +1,7 @@
 import geopandas as gpd
 
 
-def add_sinuosity(network, dem, crs_epsg):
+def add_sinuosity(network, crs_epsg):
 
     # convert epsg number into crs dict
     sref = {'init': 'epsg:{}'.format(crs_epsg)}
