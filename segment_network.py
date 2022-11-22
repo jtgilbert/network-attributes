@@ -3,11 +3,13 @@ from shapely.geometry import Point, LineString, MultiPoint
 from shapely.ops import split
 
 
-def split_network(network, seg_length, out_file): # , out_file, retain_atts):
+def split_network(network, seg_length, out_file, epsg_out=None): # , out_file, retain_atts):
 
     dn = gpd.read_file(network)
 
     # check for projected crs
+    if not dn.crs.is_projected:
+        dn.to_crs(epsg=epsg_out)
 
     # check that vertex density is reasonable for splitting to the segment length
     tot_len = 0
