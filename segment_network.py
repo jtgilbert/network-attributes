@@ -1,9 +1,18 @@
+import argparse
 import geopandas as gpd
 from shapely.geometry import Point, LineString, MultiPoint
 from shapely.ops import split
 
 
-def split_network(network, seg_length, out_file, epsg_out=None): # , out_file, retain_atts):
+def split_network(network: str, seg_length: int, out_file: str, epsg_out: int = None): # , out_file, retain_atts):
+    """
+
+    :param network: path to a drainage network layer
+    :param seg_length: the desired approximate segment length (in the input network projection units)
+    :param out_file: path to save the segmented drainge network output
+    :param epsg_out: an epsg number if reprojecting the output network
+    :return:
+    """
 
     dn = gpd.read_file(network)
 
@@ -51,7 +60,24 @@ def split_network(network, seg_length, out_file, epsg_out=None): # , out_file, r
     out_dn.to_file(out_file)
 
 
-in_network = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_network_1km.shp'
-out_network = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_network_split200.shp'
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('network', help='Path to a segmented drainage network layer.', type=str)
+    parser.add_argument('seg_length', help='The approximate lenght (in network projection units) to segment the '
+                                           'drainage network', type=int)
+    parser.add_argument('out_network', help='Path to save the segmented output drainage network.', type=str)
+    parser.add_argument('--epsg', help='An EPSG crs number if projecting the output to a new crs.', type=int)
 
-split_network(in_network, 200, out_network)
+    args = parser.parse_args()
+
+    split_network(args.network, args.seg_length, args.out_network, args.epsg)
+
+
+if __name__ == '__main__':
+    main()
+
+
+# in_network = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_network_1km.shp'
+# out_network = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_network_split200.shp'
+
+# split_network(in_network, 200, out_network)

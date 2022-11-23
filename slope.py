@@ -1,9 +1,19 @@
+import argparse
 import geopandas as gpd
 from shapely.geometry import Point
 from rasterstats import zonal_stats
 
 
-def add_slope(network, dem, crs_epsg, search_dist):
+def add_slope(network: str, dem: str, crs_epsg: int, search_dist: int):
+    """
+
+    :param network: path to a segmented drainage network layer
+    :param dem: path to a dem
+    :param crs_epsg: epsg of the input datasets or one to project them into
+    :param search_dist: a buffer distance in stream network input units to search for elevation values (accounts for
+    positional error between the network and the dem
+    :return:
+    """
 
     # convert epsg number into crs dict
     sref = {'init': 'epsg:{}'.format(crs_epsg)}
@@ -52,3 +62,20 @@ def add_slope(network, dem, crs_epsg, search_dist):
     flowlines['Slope'] = slope
 
     flowlines.to_file(network)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('network', help='Path to a segmented drainage network layer.', type=str)
+    parser.add_argument('dem', help='Path to a DEM.', type=str)
+    parser.add_argument('epsg', help='The EPSG number of the projection of the input datasets, or one to project'
+                                     'the datasets into', type=int)
+    parser.add_argument('search_dist', help='A buffer distance from the network to search for elevation values (to'
+                                            'account for positional error between the network and the dem.', type=int)
+    args = parser.parse_args()
+
+    add_slope(args.network, args.dem, args.epsg, args.search_dist)
+
+
+if __name__ == '__main__':
+    main()

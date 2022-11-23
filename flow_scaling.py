@@ -1,3 +1,4 @@
+import argparse
 import os
 import rasterio
 from rasterio.features import shapes
@@ -8,6 +9,14 @@ from pysheds.grid import Grid
 
 
 def get_flow_scaling_factor(network: str, meas_id: int, dem: str, precip_raster: str):
+    """
+
+    :param network: path to a segment stream network layer
+    :param meas_id: the reach id (e.g. fid) where this discharge record applies
+    :param dem: path to a DEM
+    :param precip_raster: path to a precipitation raster (e.g., PRISM)
+    :return: adds a field 'flow_scale' to the drainage network for scaling discharge measurements across the network
+    """
 
     # check for projection consistency
 
@@ -109,11 +118,27 @@ def get_flow_scaling_factor(network: str, meas_id: int, dem: str, precip_raster:
     dn.to_file(network)
 
 
-in_network = '/media/jordan/Elements/Geoscience/Bitterroot/Blodgett/GIS/Blodgett_network.shp'
-in_reach = 6
-in_dem = '/media/jordan/Elements/Geoscience/Bitterroot/Blodgett/GIS/Blodgett_DEM_10m.tif'
-in_precip = '/media/jordan/Elements/Geoscience/Bitterroot/Blodgett/GIS/precip_100m.tif'
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('network', help='Path to a segmented stream network layer.', type=str)
+    parser.add_argument('measurement_reach', help='The reach ID (e.g., fid) of the reach for which a discharge record'
+                                                  'applies.', type=int)
+    parser.add_argument('dem', help='Path to a DEM.', type=str)
+    parser.add_argument('precipitation', help='Path to a precipitation raster (e.g., PRISM).', type=str)
+    args = parser.parse_args()
 
-get_flow_scaling_factor(in_network, in_reach, in_dem, in_precip)
+    get_flow_scaling_factor(args.network, args.measurement_reach, args.dem, args.precipitation)
+
+
+if __name__ == '__main__':
+    main()
+
+
+# in_network = '/media/jordan/Elements/Geoscience/Bitterroot/Blodgett/GIS/Blodgett_network.shp'
+# in_reach = 6
+# in_dem = '/media/jordan/Elements/Geoscience/Bitterroot/Blodgett/GIS/Blodgett_DEM_10m.tif'
+# in_precip = '/media/jordan/Elements/Geoscience/Bitterroot/Blodgett/GIS/precip_100m.tif'
+
+# get_flow_scaling_factor(in_network, in_reach, in_dem, in_precip)
 
 

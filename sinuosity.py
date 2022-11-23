@@ -1,7 +1,14 @@
+import argparse
 import geopandas as gpd
 
 
-def add_sinuosity(network, crs_epsg):
+def add_sinuosity(network: str, crs_epsg: int):
+    """
+
+    :param network: path to a segmented drainage network layer
+    :param crs_epsg: the epsg number of the network projection, or one to reproject the network to
+    :return:
+    """
 
     # convert epsg number into crs dict
     sref = {'init': 'epsg:{}'.format(crs_epsg)}
@@ -34,3 +41,16 @@ def add_sinuosity(network, crs_epsg):
     # add sinuosity values to network attribute table
     flowlines['Sinuosity'] = sin
     flowlines.to_file(network)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('network', help='path to a segmented drainage network layer', type=str)
+    parser.add_argument('epsg', help='the epsg number of the network projection, or one to reproject the network to', type=int)
+    args = parser.parse_args()
+
+    add_sinuosity(args.network, args.epsg)
+
+
+if __name__ == '__main__':
+    main()

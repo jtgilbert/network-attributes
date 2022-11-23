@@ -1,3 +1,4 @@
+import argparse
 import math
 import rasterio
 import geopandas as gpd
@@ -5,11 +6,17 @@ from shapely.geometry import Point
 from rasterstats import zonal_stats
 
 
-def network_topology(in_network, first_feature, dem):
+def network_topology(in_network: str, first_feature: int, dem:str):
+    """
+
+    :param in_network: path to a segmented drainage network layer
+    :param first_feature: the feature ID (e.g., fid) to start with (upstream-most feature)
+    :param dem: path to a dem
+    :return:
+    """
 
     features = {}
     topochains = {}
-    attributes = {}
 
     with rasterio.open(dem) as src:
         if not src.crs.is_projected:
@@ -224,9 +231,22 @@ def magnitude_order(num):
     return res
 
 
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('network', help='Path to a segmented stream network layer.', type=str)
+    parser.add_argument('first_feature', help='The feature ID of the reach topology should start with.', type=int)
+    parser.add_argument('dem', help='Path to a DEM.', type=str)
+    args = parser.parse_args()
 
-network = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_network_split200.shp'
-ff = 207
-indem = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_DEM_2m.tif'
+    network_topology(args.network, args.first_feature, args.dem)
 
-network_topology(network, ff, indem)
+
+if __name__ == '__main__':
+    main()
+
+
+# network = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_network_split200.shp'
+# ff = 207
+# indem = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_DEM_2m.tif'
+
+# network_topology(network, ff, indem)
