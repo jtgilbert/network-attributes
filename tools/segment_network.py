@@ -75,9 +75,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-# in_network = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_network_1km.shp'
-# out_network = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_network_split200.shp'
-
-# split_network(in_network, 200, out_network)

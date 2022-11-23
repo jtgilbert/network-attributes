@@ -243,10 +243,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-# network = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_network_split200.shp'
-# ff = 207
-# indem = '/media/jordan/Elements/Geoscience/Bitterroot/lidar/blodgett/Blodgett_DEM_2m.tif'
-
-# network_topology(network, ff, indem)

@@ -4,7 +4,7 @@ from shapely.geometry import Point
 from rasterstats import zonal_stats
 
 
-def add_slope(network: str, dem: str, crs_epsg: int, search_dist: int):
+def add_slope(network: str, dem: str, crs_epsg: int, search_dist: float):
     """
 
     :param network: path to a segmented drainage network layer
@@ -71,7 +71,7 @@ def main():
     parser.add_argument('epsg', help='The EPSG number of the projection of the input datasets, or one to project'
                                      'the datasets into', type=int)
     parser.add_argument('search_dist', help='A buffer distance from the network to search for elevation values (to'
-                                            'account for positional error between the network and the dem.', type=int)
+                                            'account for positional error between the network and the dem.', type=float)
     args = parser.parse_args()
 
     add_slope(args.network, args.dem, args.epsg, args.search_dist)

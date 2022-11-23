@@ -4,7 +4,7 @@ from shapely.geometry import Point
 from rasterstats import zonal_stats
 
 
-def add_da(network: str, da: str, crs_epsg: str, search_dist: str):
+def add_da(network: str, da: str, crs_epsg: str, search_dist: float):
     """
 
     :param network: path to segmented stream network shapefile

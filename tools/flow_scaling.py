@@ -132,13 +132,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-# in_network = '/media/jordan/Elements/Geoscience/Bitterroot/Blodgett/GIS/Blodgett_network.shp'
-# in_reach = 6
-# in_dem = '/media/jordan/Elements/Geoscience/Bitterroot/Blodgett/GIS/Blodgett_DEM_10m.tif'
-# in_precip = '/media/jordan/Elements/Geoscience/Bitterroot/Blodgett/GIS/precip_100m.tif'
-
-# get_flow_scaling_factor(in_network, in_reach, in_dem, in_precip)
-
-
