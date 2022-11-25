@@ -48,6 +48,8 @@ def add_da(network: str, da: str, crs_epsg: str, search_dist: float):
     # add da values to network attribute table
     flowlines['Drain_Area'] = da_list
 
+    flowlines.to_file(network)
+
 
 def main():
     parser = argparse.ArgumentParser()

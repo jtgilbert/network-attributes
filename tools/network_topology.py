@@ -61,8 +61,8 @@ def network_topology(in_network: str, first_feature: int, dem:str):
     starting_segs = s_ff_segs+e_ff_segs
     starting_segs.remove(first_feature)
 
-    tot_links = []
     ff = first_feature
+    tot_links = [ff]
 
     # find links in each chain
     chain = 1
@@ -72,28 +72,49 @@ def network_topology(in_network: str, first_feature: int, dem:str):
         seg = features[ff]
         while seg:
             dsseg = None
+            candidates = []
             for segid, attrs in features.items():
                 if attrs['start_coords'] == seg['end_coords']:
+                    # put list of possible segs then preferentially choose the one that end elev < start elev.
                     if segid not in tot_links:
-                        links.append(segid)
-                        chain_len += attrs['length']
-                        tot_links.append(segid)
-                        print(f'Adding segment {segid} to chain')
-                        seg = features[segid]
-                        dsseg = seg
+                        candidates.append(segid)
+
                 if attrs['end_coords'] == seg['end_coords']:
                     if attrs['end_elev']+(.01*dn.loc[segid].geometry.length) > attrs['start_elev']:  # janky fix to flatter reaches
                         if segid not in tot_links:
-                            links.append(segid)
-                            chain_len += attrs['length']
-                            tot_links.append(segid)
-                            print(f'Adding segment {segid} to chain')
-                            tmp_st = attrs['end_coords']
-                            tmp_end = attrs['start_coords']
-                            features[segid]['start_coords'] = tmp_st
-                            features[segid]['end_coords'] = tmp_end
-                            seg = features[segid]
-                            dsseg = seg
+                            candidates.append(segid)
+
+            if len(candidates) == 1:  # if there's only one option for downstream segments
+                if candidates[0] not in tot_links:
+                    links.append(candidates[0])
+                    chain_len += features[candidates[0]]['length']
+                    tot_links.append(candidates[0])
+                    print(f'Adding segment {candidates[0]} to chain')
+                    if features[candidates[0]]['end_elev'] > features[candidates[0]]['start_elev']:
+                        tmp_st = features[candidates[0]]['end_coords']
+                        tmp_end = features[candidates[0]]['start_coords']
+                        features[candidates[0]]['start_coords'] = tmp_st
+                        features[candidates[0]]['end_coords'] = tmp_end
+                    seg = features[candidates[0]]
+                    dsseg = seg
+            if len(candidates) > 1:  # if there's more than one option for downstream segments
+                minel = 100000
+                candid = None
+                for id in candidates:
+                    if min(features[id]['start_elev'], features[id]['end_elev']) < minel:
+                        minel = min(features[id]['start_elev'], features[id]['end_elev'])
+                        candid = id
+                if candid:
+                    if features[candid]['end_elev'] > features[candid]['start_elev']:
+                        tmp_st = features[candid]['end_coords']
+                        tmp_end = features[candid]['start_coords']
+                        features[candid]['start_coords'] = tmp_st
+                        features[candid]['end_coords'] = tmp_end
+                    links.append(candid)
+                    tot_links.append(candid)
+                    seg = features[candid]
+                    dsseg = seg
+
             if dsseg is None:
                 # check that the end point isn't actually the start
                 for segid, attrs in features.items():

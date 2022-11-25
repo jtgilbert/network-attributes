@@ -54,7 +54,7 @@ def add_slope(network: str, dem: str, crs_epsg: int, search_dist: float):
         elev2 = zs2[0].get('min')
 
         # calculate the slope of each reach and append it to the list
-        slope_value = elev1-elev2/length
+        slope_value = abs(elev1-elev2)/length
 
         slope.append(slope_value)
 
