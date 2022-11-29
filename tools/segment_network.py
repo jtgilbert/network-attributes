@@ -49,7 +49,7 @@ def split_network(network: str, seg_length: int, out_file: str, epsg_out: int = 
             if len(pts) > 1:
                 pt = MultiPoint(pts)
             else:
-                pt = Point(pts)
+                pt = Point(pts[0])
             ls = split(feature, pt)
             for f in ls:
                 out_features.append(f)

@@ -57,7 +57,16 @@ def network_topology(in_network: str, first_feature: int, dem:str):
         if features[seg]['end_elev'] < minel:
             minel = features[seg]['end_elev']
             minseg = seg
-    e_ff_segs.remove(minseg)
+    sminel = 1000000
+    sminseg = None
+    for seg in s_ff_segs:
+        if features[seg]['start_elev'] < sminel:
+            sminel = features[seg]['start_elev']
+            sminseg = seg
+    if features[minseg]['end_elev'] < features[sminseg]['start_elev']:
+        e_ff_segs.remove(minseg)
+    else:
+        s_ff_segs.remove(sminseg)
     starting_segs = s_ff_segs+e_ff_segs
     starting_segs.remove(first_feature)
 
@@ -77,35 +86,36 @@ def network_topology(in_network: str, first_feature: int, dem:str):
                 if attrs['start_coords'] == seg['end_coords']:
                     # put list of possible segs then preferentially choose the one that end elev < start elev.
                     if segid not in tot_links:
-                        candidates.append(segid)
+                        candidates.append([segid, 0])
 
                 if attrs['end_coords'] == seg['end_coords']:
-                    if attrs['end_elev']+(.01*dn.loc[segid].geometry.length) > attrs['start_elev']:  # janky fix to flatter reaches
-                        if segid not in tot_links:
-                            candidates.append(segid)
+                    # if attrs['end_elev']+(.01*dn.loc[segid].geometry.length) > attrs['start_elev']:  # janky fix to flatter reaches
+                    if segid not in tot_links:
+                        candidates.append([segid, 1])
 
             if len(candidates) == 1:  # if there's only one option for downstream segments
-                if candidates[0] not in tot_links:
-                    links.append(candidates[0])
-                    chain_len += features[candidates[0]]['length']
-                    tot_links.append(candidates[0])
-                    print(f'Adding segment {candidates[0]} to chain')
-                    if features[candidates[0]]['end_elev'] > features[candidates[0]]['start_elev']:
-                        tmp_st = features[candidates[0]]['end_coords']
-                        tmp_end = features[candidates[0]]['start_coords']
-                        features[candidates[0]]['start_coords'] = tmp_st
-                        features[candidates[0]]['end_coords'] = tmp_end
-                    seg = features[candidates[0]]
+                if candidates[0][0] not in tot_links:
+                    links.append(candidates[0][0])
+                    chain_len += features[candidates[0][0]]['length']
+                    tot_links.append(candidates[0][0])
+                    print(f'Adding segment {candidates[0][0]} to chain')
+                    if candidates[0][1] == 1:
+                        tmp_st = features[candidates[0][0]]['end_coords']
+                        tmp_end = features[candidates[0][0]]['start_coords']
+                        features[candidates[0][0]]['start_coords'] = tmp_st
+                        features[candidates[0][0]]['end_coords'] = tmp_end
+                    seg = features[candidates[0][0]]
                     dsseg = seg
             if len(candidates) > 1:  # if there's more than one option for downstream segments
                 minel = 100000
                 candid = None
-                for id in candidates:
+                for id, status in candidates:
                     if min(features[id]['start_elev'], features[id]['end_elev']) < minel:
                         minel = min(features[id]['start_elev'], features[id]['end_elev'])
                         candid = id
+                        stat = status
                 if candid:
-                    if features[candid]['end_elev'] > features[candid]['start_elev']:
+                    if stat == 1:
                         tmp_st = features[candid]['end_coords']
                         tmp_end = features[candid]['start_coords']
                         features[candid]['start_coords'] = tmp_st
@@ -137,6 +147,7 @@ def network_topology(in_network: str, first_feature: int, dem:str):
                     chain += 1
                     ff = starting_segs[0]
                     starting_segs.remove(ff)
+                    tot_links.append(ff)
                 else:
                     chain = None
 

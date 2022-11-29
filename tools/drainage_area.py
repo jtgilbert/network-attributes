@@ -16,7 +16,7 @@ def add_da(network: str, da: str, crs_epsg: str, search_dist: float):
     """
 
     # convert epsg number into crs dict
-    sref = {'init': 'epsg:{}'.format(crs_epsg)}
+    sref = 'epsg:{}'.format(crs_epsg)
 
     # read in network and check for projection
     flowlines = gpd.read_file(network)
